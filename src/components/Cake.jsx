@@ -1,21 +1,28 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Tambahkan hook navigasi otomatis
 import "../assets/css/cake.css";
 import { CakeSVG, confetti } from "../assets";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 
 function Cake() {
   const [candlesBlownOut, setCandlesBlownOut] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Lilin akan otomatis tertiup (mati) setelah 3 detik (3000 milidetik)
-    const timer = setTimeout(() => {
+    // 1. Lilin akan otomatis tertiup (mati) setelah 2 detik
+    const blowTimer = setTimeout(() => {
       setCandlesBlownOut(true);
-    }, 3000);
+      
+      // 2. Langsung otomatis pindah ke halaman /present setelah 3 detik lilin mati
+      const redirectTimer = setTimeout(() => {
+        navigate("/present");
+      }, 3000);
 
-    // Membersihkan timer jika berpindah halaman
-    return () => clearTimeout(timer);
-  }, []);
+      return () => clearTimeout(redirectTimer);
+    }, 2000);
+
+    return () => clearTimeout(blowTimer);
+  }, [navigate]);
 
   return (
     <>
@@ -50,11 +57,7 @@ function Cake() {
                 </textPath>
               </text>
             </svg>
-            <Link to="/present" className="flex justify-center items-center">
-              <p className="absolute top-[30rem] xs:top-[36rem] s:top-[40rem] px-7 py-3 bg-customBlue text-white rounded-full hover:bg-blue-600 font-medium text-base text-center ">
-                Next Page
-              </p>
-            </Link>
+            {/* Tombol Next Page sudah dihapus karena sekarang otomatis */}
           </motion.div>
         )}
         <div className="relative z-10">
