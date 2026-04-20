@@ -5,72 +5,16 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 function Cake() {
-  // You may want to tweak these audio codes more to your liking.
   const [candlesBlownOut, setCandlesBlownOut] = useState(false);
-  const [micPermissionGranted, setMicPermissionGranted] = useState(false);
 
   useEffect(() => {
-    let audioContext;
-    let analyser;
-    let dataArray;
-    let blowStartTime = null;
+    // Lilin akan otomatis tertiup (mati) setelah 3 detik (3000 milidetik)
+    const timer = setTimeout(() => {
+      setCandlesBlownOut(true);
+    }, 3000);
 
-    async function initBlowDetection() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        audioContext = new (window.AudioContext || window.AudioContext)();
-        analyser = audioContext.createAnalyser();
-        const source = audioContext.createMediaStreamSource(stream);
-
-        analyser.fftSize = 512;
-        const bufferLength = analyser.frequencyBinCount;
-        dataArray = new Uint8Array(bufferLength);
-        source.connect(analyser);
-
-        detectBlow();
-      } catch (error) {
-        console.error("Microphone access denied:", error);
-      }
-    }
-
-    function detectBlow() {
-      if (!analyser || !dataArray) return;
-      analyser.getByteFrequencyData(dataArray);
-      const lowFrequencyValues = dataArray.slice(0, 15);
-      const averageLowFrequency =
-        lowFrequencyValues.reduce((sum, value) => sum + value, 0) /
-        lowFrequencyValues.length;
-
-      const blowThreshold = 100; // Moderate threshold
-      const requiredDuration = 1500; // 1. 5 sec blow required
-
-      if (averageLowFrequency > blowThreshold) {
-        if (!blowStartTime) {
-          blowStartTime = performance.now();
-        } else if (performance.now() - blowStartTime > requiredDuration) {
-          setCandlesBlownOut(true);
-        }
-      } else {
-        if (blowStartTime && performance.now() - blowStartTime > 200) {
-          blowStartTime = null;
-        }
-      }
-
-      requestAnimationFrame(detectBlow);
-    }
-
-    setTimeout(() => {
-      initBlowDetection();
-      setMicPermissionGranted(true);
-    }, 10000); //permission delay
-
-    return () => {
-      if (audioContext) {
-        audioContext.close();
-      }
-    };
+    // Membersihkan timer jika berpindah halaman
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -118,30 +62,6 @@ function Cake() {
             <div className="candle">
               {!candlesBlownOut && (
                 <div>
-                  <div className="absolute -top-[200px] text-gray-200 text-3xl">
-                    <motion.div
-                      animate={{ opacity: [0, 0.25, 0] }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: 8,
-                      }}
-                      className="block -translate-x-[60px] translate-y-[105px] -rotate-[30deg] text-gray-200 text-xl "
-                    >
-                      blow
-                    </motion.div>
-                    <motion.div
-                      animate={{ opacity: [0, 0.25, 0] }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: 9,
-                      }}
-                      className="block translate-x-10 translate-y-[80px] rotate-[30deg] text-gray-200 text-xl"
-                    >
-                      blow
-                    </motion.div>
-                  </div>
                   <div>
                     <div className="flame"></div>
                     <div className="flame"></div>
