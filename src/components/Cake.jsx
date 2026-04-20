@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // Menggunakan Link kembali untuk tombol
+import { Link } from "react-router-dom";
 import "../assets/css/cake.css";
 import { CakeSVG, confetti } from "../assets";
 import { motion } from "framer-motion";
@@ -8,10 +8,11 @@ function Cake() {
   const [candlesBlownOut, setCandlesBlownOut] = useState(false);
 
   useEffect(() => {
-    // Lilin akan otomatis tertiup (mati) setelah 2 detik
+    // Lilin akan dibiarkan turun dan menyala dulu (butuh waktu ~7.5 detik dari CSS).
+    // Setelah detik ke-10, lilin baru akan ditiup otomatis.
     const blowTimer = setTimeout(() => {
       setCandlesBlownOut(true);
-    }, 4000);
+    }, 10000); 
 
     return () => clearTimeout(blowTimer);
   }, []);
@@ -49,8 +50,6 @@ function Cake() {
                 </textPath>
               </text>
             </svg>
-            
-            {/* Tombol Next Page dimunculkan kembali */}
             <Link to="/present" className="flex justify-center items-center">
               <p className="absolute top-[30rem] xs:top-[36rem] s:top-[40rem] px-7 py-3 bg-customBlue text-white rounded-full hover:bg-blue-600 font-medium text-base text-center ">
                 Next Page
